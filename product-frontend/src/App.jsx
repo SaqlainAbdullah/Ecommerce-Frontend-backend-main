@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import Form from "react-bootstrap/Form";
+
+// Import components
+import Header from "./components/Header";
+import ProductCard from "./components/ProductCard";
+import ProductForm from "./components/ProductForm";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -90,110 +92,40 @@ function App() {
 
   return (
     <>
-      <div style={{ display: "flex" }}>
-        <div>
-          <h1> E-commerce website </h1>
-          <h2>New Product</h2>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>title</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter title"
-                onChange={handleTitleChange}
+      <Header />
+      
+      <main className="main">
+        <div className="container">
+          <div className="form-layout">
+            <div className="form-column">
+              <ProductForm 
+                onSubmit={handleSubmit} 
+                formType="add" 
               />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Image URL</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Image URL"
-                onChange={handleImageURLChange}
+            </div>
+            
+            <div className="form-column">
+              <ProductForm 
+                onSubmit={handleUpdate} 
+                formType="update" 
+                initialData={products.find(p => p.id === productIdOfUpdate)}
               />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                onChange={handleDescChange}
+            </div>
+          </div>
+          
+          <h2 className="form-title" style={{ marginTop: "2rem" }}>Our Products</h2>
+          <div className="product-grid">
+            {products.map((product) => (
+              <ProductCard 
+                key={product.id}
+                product={product} 
+                onUpdate={() => setProductIdOfUpdate(product.id)}
+                onDelete={deleteProduct}
               />
-            </Form.Group>
-
-            <Button variant="primary" type="submit">
-              Add
-            </Button>
-          </Form>
+            ))}
+          </div>
         </div>
-        <div>
-          <h2>Product Update</h2>
-          <Form onSubmit={handleUpdate}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>title</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter title"
-                onChange={handleTitleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Image URL</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Image URL"
-                onChange={handleImageURLChange}
-              />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                onChange={handleDescChange}
-              />
-            </Form.Group>
-
-            <Button variant="primary" type="submit">
-              Update
-            </Button>
-          </Form>
-        </div>
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-        {products.map((pr) => {
-          return (
-            <Card
-              style={{
-                width: "18rem",
-                border: "2px solid black",
-                borderRadius: 10,
-              }}
-            >
-              <Card.Img variant="top" src={pr.imageUrl} width={200} />
-              <Card.Body>
-                <Card.Title>{pr.name}</Card.Title>
-                <Card.Text>{pr.desc}</Card.Text>
-                <Button
-                  variant="primary"
-                  onClick={() => setProductIdOfUpdate(pr.id)}
-                >
-                  Update
-                </Button>
-                <Button variant="primary" onClick={() => deleteProduct(pr.id)}>
-                  Delete
-                </Button>
-                <Button variant="primary">Add to Cart</Button>
-              </Card.Body>
-            </Card>
-          );
-        })}
-      </div>
+      </main>
     </>
   );
 }
