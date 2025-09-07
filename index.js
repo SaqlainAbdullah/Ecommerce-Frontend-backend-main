@@ -56,15 +56,19 @@ app.post("/products", async (req, res) => {
   const newProduct = req.body;
   console.log(newProduct);
   try {
+    // Generate a unique ID based on current timestamp
+    const existingProducts = await Product.find();
+    const newId = existingProducts.length > 0 ? Math.max(...existingProducts.map(p => p.id)) + 1 : 1;
+    
     const newDBProduct = new Product({
-      id: newProduct.id,
+      id: newId,
       name: newProduct.name,
-      Price: newProduct.Price,
+      price: newProduct.price || 0,
       imageUrl: newProduct.imageUrl,
       desc: newProduct.desc,
     });
     await newDBProduct.save();
-    res.status(201).json(newProduct);
+    res.status(201).json(newDBProduct);
   } catch (err) {
     console.log(err);
     res.status(500).json("something went wrong");
@@ -85,7 +89,7 @@ app.put("/products/:id", async (req, res) => {
 app.delete("/products/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedProduct = await Product.findOneAndUpdate({ id: id });
+    const deletedProduct = await Product.findOneAndDelete({ id: id });
     console.log(deletedProduct);
     if (deletedProduct) {
       return res.status(200).json("successfully deleted");
